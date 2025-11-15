@@ -14,14 +14,12 @@ COPY package*.json .
 # copy files
 COPY prisma ./prisma
 COPY . .
-RUN npm i -g serve
 RUN pnpm i
 
 # build apps
 ENV NODE_ENV production
 RUN npm run build:api
 RUN npm run build:web
-RUN npm run build:proxy
 
 # expose ports
 EXPOSE 3000
