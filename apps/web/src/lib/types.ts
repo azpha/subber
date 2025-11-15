@@ -14,6 +14,11 @@ type CreationValues = {
   price: string | null;
   paymentMethod: PaymentMethod;
 };
+type Settings = {
+  discordWebhook: string | undefined;
+  ntfyWebhook: string | undefined;
+  budget: string | undefined;
+};
 
 type Response = {
   status: boolean;
@@ -46,4 +51,5 @@ export type {
   SortDirectionFilter,
   CreationValues,
   PaymentMethod,
+  Settings,
 };

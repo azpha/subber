@@ -22,41 +22,36 @@ async function updateSetting(req: Request, res: Response, next: NextFunction) {
   try {
     const body = settings.updateSettings.parse(req.body);
 
-    const doesSettingExist = await Database.settings.findFirst({
+    const updatedSettings = await Database.settings.upsert({
+      create: {
+        id: 1,
+        ...body,
+      },
+      update: {
+        ...body,
+      },
       where: {
-        name: body.name,
+        id: 1,
+      },
+      select: {
+        discordWebhook: true,
+        ntfyWebhook: true,
+        budget: true,
       },
     });
 
-    if (!doesSettingExist) {
-      const setting = await Database.settings.create({
-        data: {
-          ...body,
-        },
-      });
-      res.status(200).json(setting);
-    } else {
-      const setting = await Database.settings.update({
-        data: {
-          value: body.value,
-        },
-        where: {
-          name: body.name,
-        },
-      });
-      res.status(200).json(setting);
-    }
+    res.status(200).json(updatedSettings);
+    return;
   } catch (e) {
     next(e);
   }
 }
 
-async function resetSetting(req: Request, res: Response, next: NextFunction) {
+async function resetSettings(req: Request, res: Response, next: NextFunction) {
   try {
-    const setting = validSettings.parse(req.body.name);
     await Database.settings.delete({
       where: {
-        name: setting,
+        id: 1,
       },
     });
 
@@ -68,118 +63,140 @@ async function resetSetting(req: Request, res: Response, next: NextFunction) {
 
 async function getSettings(req: Request, res: Response, next: NextFunction) {
   try {
-    const settings = await Database.settings.findMany();
-    res.status(200).json(settings);
+    const settings = await Database.settings.findFirst({
+      where: {
+        id: 1,
+      },
+      select: {
+        discordWebhook: true,
+        ntfyWebhook: true,
+        budget: true,
+      },
+    });
+
+    res.status(200).json(settings || {});
+    return;
   } catch (e) {
     next(e);
   }
 }
 
-// async function GetWebhookStatus(
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ): Promise<any> {
-//   try {
-//     const discord = process.env.DISCORD_WEBHOOK as string;
-//     const ntfy = process.env.NTFY_HOST as string;
+async function testDiscordWebhook(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> {
+  try {
+    const webhook = await Database.settings.findFirst({
+      where: {
+        id: 1,
+      },
+      select: {
+        discordWebhook: true,
+      },
+    });
 
-//     return res.status(200).json({
-//       status: 200,
-//       data: {
-//         discord: !!discord,
-//         ntfy: !!ntfy,
-//       },
-//     });
-//   } catch (e) {
-//     next(e);
-//   }
-// }
+    if (webhook?.discordWebhook) {
+      const payload = {
+        username: "Subscriptions",
+        embeds: [
+          {
+            title: "It works!",
+            description:
+              "Your subscription-tracker Discord webhook configuration works!",
+          },
+        ],
+      };
 
-// async function TestWebhook(
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ): Promise<any> {
-//   try {
-//     if (process.env.DISCORD_WEBHOOK) {
-//       const payload = {
-//         username: "Subscriptions",
-//         embeds: [
-//           {
-//             title: "It works!",
-//             url: `${process.env.BASE_URL}/`,
-//             description:
-//               "Your subscription-tracker Discord webhook configuration works!",
-//             color: 16711680,
-//           },
-//         ],
-//       };
+      const result = await fetch(webhook.discordWebhook, {
+        method: "post",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-//       const result = await fetch(process.env.DISCORD_WEBHOOK, {
-//         method: "post",
-//         headers: {
-//           "content-type": "application/json",
-//         },
-//         body: JSON.stringify(payload),
-//       });
+      if (result.ok) {
+        res.sendStatus(204);
+        return;
+      } else {
+        res.status(500).json({
+          status: 500,
+          message: "Failed to dispatch webhook!",
+        });
+        return;
+      }
+    } else {
+      return res.status(400).json({
+        status: 400,
+        message: "Discord webhook not configured",
+      });
+    }
+  } catch (e) {
+    next(e);
+  }
+}
 
-//       res.status(result.status).json({
-//         status: result,
-//       });
-//     } else {
-//       return res.status(400).json({
-//         status: 400,
-//         message: "Discord webhook not configured",
-//       });
-//     }
-//   } catch (e) {
-//     next(e);
-//   }
-// }
+async function testNtfyWebhook(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> {
+  try {
+    const webhook = await Database.settings.findFirst({
+      where: {
+        id: 1,
+      },
+      select: {
+        ntfyWebhook: true,
+      },
+    });
 
-// async function TestPushNotification(
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ): Promise<any> {
-//   try {
-//     if (process.env.NTFY_HOST) {
-//       const host = new URL(process.env.NTFY_HOST);
+    if (webhook?.ntfyWebhook) {
+      const host = new URL(webhook.ntfyWebhook);
 
-//       const payload = {
-//         topic: host.pathname.replace("/", ""),
-//         title: "It works!",
-//         message: "Your subscription-tracker notification configuration works!",
-//         priority: 4,
-//         click: `${process.env.BASE_URL}/`,
-//       };
+      const payload = {
+        topic: host.pathname.replace("/", ""),
+        title: "It works!",
+        message: "Your subscription-tracker notification configuration works!",
+        priority: 4,
+        click: `${process.env.BASE_URL}/`,
+      };
 
-//       const result = await fetch(host.origin, {
-//         method: "post",
-//         headers: {
-//           "content-type": "application/json",
-//         },
-//         body: JSON.stringify(payload),
-//       });
+      const result = await fetch(host.origin, {
+        method: "post",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-//       res.status(result.status).json({
-//         status: result,
-//       });
-//     } else {
-//       return res.status(400).json({
-//         status: 400,
-//         message: "Ntfy host not configured",
-//       });
-//     }
-//   } catch (e) {
-//     next(e);
-//   }
-// }
+      if (result.ok) {
+        res.status(204);
+        return;
+      } else {
+        res.status(500).json({
+          status: 500,
+          message: "Failed to dispatch webhook!",
+        });
+        return;
+      }
+    } else {
+      return res.status(400).json({
+        status: 400,
+        message: "Ntfy host not configured",
+      });
+    }
+  } catch (e) {
+    next(e);
+  }
+}
 
 export default {
   getApplicationVersion,
   updateSetting,
   getSettings,
-  resetSetting,
+  resetSettings,
+  testDiscordWebhook,
+  testNtfyWebhook,
 };

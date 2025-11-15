@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/store/hooks";
+import { hydrateItems } from "@/store/thunks/itemThunks";
+import Upcoming from "@/components/subscription/Upcoming";
+import HighestSpending from "@/components/subscription/HighestSpending";
+import Budget from "@/components/subscription/Budget";
+import Info from "@/components/subscription/Info";
+import Create from "@/components/modal/Create";
+import { ArrowRight } from "lucide-react";
+
+// shadcn
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import Info from "@/components/subscription/Info";
-import Create from "./components/modal/Create";
-import { useAppDispatch } from "./store/hooks";
-import { hydrateItems } from "./store/thunks/itemThunks";
-import Upcoming from "./components/subscription/Upcoming";
-import HighestSpending from "./components/subscription/HighestSpending";
-import Budget from "./components/subscription/Budget";
 
 function App() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -17,10 +21,10 @@ function App() {
   );
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedDate) {
-      console.log(selectedDate.toISOString());
       dispatch(
         hydrateItems(`fromDate=${selectedDate.toISOString().split("T")[0]}`)
       );
@@ -64,6 +68,16 @@ function App() {
   return (
     <div className="bg-neutral-950 flex justify-center items-center min-h-screen">
       <div className="w-[500px]">
+        <div className="p-2 opacity-50">
+          <p
+            onClick={() => navigate("/settings")}
+            className="text-white inline text-xs hover:cursor-pointer"
+          >
+            Settings
+            <ArrowRight className="inline" size={15} />
+          </p>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           {/* upcoming */}
           <div className="col-span-2">

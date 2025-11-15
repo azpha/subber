@@ -1,13 +1,9 @@
 import { useAppSelector } from "@/store/hooks";
 import { Subscription } from "@/lib/types";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 export default function Info() {
   const items = useAppSelector((state) => state.item.items);
-
-  useEffect(() => {
-    console.log(items);
-  }, [items]);
 
   const ListItem = ({ item }: { item: Subscription }) => {
     const methods = {

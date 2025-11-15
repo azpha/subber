@@ -17,9 +17,16 @@ export async function request(
     body: stringBody,
   });
 
+  let parsedBody;
+  try {
+    parsedBody = await data.json();
+  } catch (e) {
+    console.warn("Couldn't parse, ignoring request body", e);
+  }
+
   return {
     status: data.ok,
-    body: await data.json(),
+    body: parsedBody,
   };
 }
 

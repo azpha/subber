@@ -21,6 +21,8 @@ model Subscription {
 }
 
 model Settings {
-  name  String @unique
-  value String
+  id             Int     @id @default(1)
+  discordWebhook String  @unique @default("")
+  ntfyWebhook    String  @default("")
+  budget         Decimal @default(0.00)
 }

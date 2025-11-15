@@ -1,11 +1,11 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 
 import itemReducer from "./reducers/itemSlice";
-import modalReducer from "./reducers/modalSlice";
+import settingsReducer from "./reducers/settingsSlice";
 
 const reducer = combineReducers({
   item: itemReducer,
-  modals: modalReducer,
+  settings: settingsReducer,
 });
 
 export const store = configureStore({

@@ -11,8 +11,9 @@ export const dateRange = z.enum(["7-days", "30-days"]);
 export const sortBy = z.enum(["price"]);
 export const settings = {
   updateSettings: z.object({
-    name: validSettings,
-    value: z.string().min(1),
+    discordWebhook: z.string().url().optional(),
+    ntfyWebhook: z.string().url().optional(),
+    budget: z.coerce.number().optional(),
   }),
   deleteSettings: z.object({
     name: validSettings,
