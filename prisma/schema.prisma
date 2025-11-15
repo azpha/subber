@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,4 +18,9 @@ model Subscription {
   billingFrequencyInMonths Int
   totalSpend               Decimal  @default(0.00)
   shouldNotifyExpiry       Boolean  @default(true)
+}
+
+model Settings {
+  name  String @unique
+  value String
 }
