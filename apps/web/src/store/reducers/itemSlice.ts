@@ -11,11 +11,13 @@ interface ItemState {
   upcomingItem: Subscription | null;
   highestSpendingItem: Subscription | null;
   filters: Filters;
+  isLoading: boolean;
 }
 const initialState: ItemState = {
   items: [],
   upcomingItem: null,
   highestSpendingItem: null,
+  isLoading: true,
   filters: {
     sortBy: "none",
     sortDirection: "desc",
@@ -76,6 +78,9 @@ export const itemSlice = createSlice({
     resetFilters: (state) => {
       state.filters = initialState.filters;
     },
+    setIsLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
   },
 });
 
@@ -88,5 +93,6 @@ export const {
   updateSortByFilter,
   updateSortDirectionFilter,
   resetFilters,
+  setIsLoading,
 } = itemSlice.actions;
 export default itemSlice.reducer;

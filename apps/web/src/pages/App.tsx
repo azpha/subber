@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/store/hooks";
-import { hydrateItems } from "@/store/thunks/itemThunks";
+import {
+  hydrateItems,
+  hydrateHighestSpendingItem,
+  hydrateUpcomingItem,
+} from "@/store/thunks/itemThunks";
+import { hydrateSettings } from "@/store/thunks/settingsThunks";
 import Upcoming from "@/components/subscription/Upcoming";
 import HighestSpending from "@/components/subscription/HighestSpending";
 import Budget from "@/components/subscription/Budget";
@@ -14,6 +19,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { setIsLoading } from "@/store/reducers/itemSlice";
 
 function App() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -30,6 +36,12 @@ function App() {
       );
     }
   }, [selectedDate]);
+  useEffect(() => {
+    dispatch(hydrateSettings());
+    dispatch(hydrateHighestSpendingItem());
+    dispatch(hydrateUpcomingItem());
+    dispatch(setIsLoading(false));
+  }, []);
 
   const CalendarUi = () => {
     return (
@@ -157,66 +169,5 @@ function App() {
     </div>
   );
 }
-
-// function App() {
-//   const dispatch = useAppDispatch();
-
-//   const fetchSubscriptions = async () => {
-//     dispatch(hydrateItems());
-//   };
-
-//   useEffect(() => {
-//     fetchSubscriptions();
-//   }, []);
-//   useEffect(() => {
-//     const query = location.search.replace("?", "").split("&");
-//     for (const param of query) {
-//       const value = param.split("=");
-//       if (
-//         value[0] === "filter" &&
-//         (value[1] === "7-days" || value[1] === "30-days")
-//       ) {
-//         dispatch(updateDateFilter(value[1] as DateRangeFilter));
-//       }
-//     }
-//   }, []);
-
-//   return (
-//     <main className="bg-black text-white min-h-screen flex justify-center items-center">
-//       <div className="flex flex-wrap">
-//         <SubscriptionFilters />
-
-//         <div className="border border-white border-solid w-full">
-//           <div className="mb-2 p-2">
-//             <div className="space-x-2 mb-2 flex justify-end">
-//               <button
-//                 onClick={() => dispatch(setActiveModal("info"))}
-//                 className="bg-white text-black rounded-lg p-1 font-bold hover:cursor-pointer"
-//               >
-//                 <Info />
-//               </button>
-//               <button
-//                 onClick={() => dispatch(setActiveModal("editing"))}
-//                 className="bg-white text-black rounded-lg p-1 font-bold hover:cursor-pointer"
-//               >
-//                 <Plus />
-//               </button>
-//             </div>
-
-//             <SubscriptionList
-//               refresh={fetchSubscriptions}
-//               onEdit={(subscription: Subscription) => {
-//                 dispatch(updateEditingItem(subscription));
-//                 dispatch(setActiveModal("editing"));
-//               }}
-//             />
-//           </div>
-//         </div>
-//       </div>
-
-//       <ModalContainer />
-//     </main>
-//   );
-// }
 
 export default App;

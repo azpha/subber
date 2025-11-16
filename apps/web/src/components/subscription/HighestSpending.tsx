@@ -1,18 +1,13 @@
-import { useAppSelector, useAppDispatch } from "@/store/hooks";
-import { useEffect } from "react";
-import { hydrateHighestSpendingItem } from "@/store/thunks/itemThunks";
+import { useAppSelector } from "@/store/hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import LoadingCard from "./LoadingCard";
+import EmptyState from "./EmptyState";
 
 export default function HighestSpending() {
-  const dispatch = useAppDispatch();
   const highestSpendingItem = useAppSelector(
     (state) => state.item.highestSpendingItem
   );
-
-  useEffect(() => {
-    dispatch(hydrateHighestSpendingItem());
-  }, []);
+  const isLoading = useAppSelector((state) => state.item.isLoading);
 
   const methods = {
     card: "Card",
@@ -43,6 +38,10 @@ export default function HighestSpending() {
       </Card>
     );
   } else {
-    return <LoadingCard />;
+    if (isLoading) {
+      return <LoadingCard />;
+    } else {
+      return <EmptyState title="HIghest Spending" />;
+    }
   }
 }

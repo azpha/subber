@@ -1,16 +1,11 @@
-import { useAppSelector, useAppDispatch } from "@/store/hooks";
-import { useEffect } from "react";
-import { hydrateUpcomingItem } from "@/store/thunks/itemThunks";
+import { useAppSelector } from "@/store/hooks";
 import { Card, CardContent } from "@/components/ui/card";
 import LoadingCard from "./LoadingCard";
+import EmptyState from "./EmptyState";
 
 export default function Upcoming() {
-  const dispatch = useAppDispatch();
   const upcomingItem = useAppSelector((state) => state.item.upcomingItem);
-
-  useEffect(() => {
-    dispatch(hydrateUpcomingItem());
-  }, []);
+  const isLoading = useAppSelector((state) => state.item.isLoading);
 
   const methods = {
     card: "Card",
@@ -18,7 +13,11 @@ export default function Upcoming() {
     bank: "Bank",
   };
 
-  if (upcomingItem) {
+  if (isLoading) {
+    return <LoadingCard />;
+  } else if (!upcomingItem) {
+    return <EmptyState title={"Upcoming"} />;
+  } else {
     return (
       <Card className="dark">
         <CardContent className="space-y-2">
@@ -38,7 +37,5 @@ export default function Upcoming() {
         </CardContent>
       </Card>
     );
-  } else {
-    return <LoadingCard />;
   }
 }
