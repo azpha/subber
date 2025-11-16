@@ -12,6 +12,7 @@ import HighestSpending from "@/components/subscription/HighestSpending";
 import Budget from "@/components/subscription/Budget";
 import Info from "@/components/subscription/Info";
 import Create from "@/components/modal/Create";
+import Version from "@/components/Version";
 import { ArrowRight } from "lucide-react";
 
 // shadcn
@@ -165,6 +166,10 @@ function App() {
             </Card>
           </div>
         </div>
+      </div>
+
+      <div className="absolute bottom-0 mx-auto pb-5">
+        <Version />
       </div>
     </div>
   );
