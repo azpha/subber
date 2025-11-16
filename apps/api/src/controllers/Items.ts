@@ -189,7 +189,6 @@ async function fetchItems(
       };
     }
     if (fromDate) {
-      console.log(new Date(fromDate.toISOString().split("T")[0]), fromDate);
       sortObject.where = {
         ...sortObject.where,
         nextBillingDate: new Date(fromDate),

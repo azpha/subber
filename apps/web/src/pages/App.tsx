@@ -5,6 +5,7 @@ import {
   hydrateItems,
   hydrateHighestSpendingItem,
   hydrateUpcomingItem,
+  hydrateTotalSpend,
 } from "@/store/thunks/itemThunks";
 import { hydrateSettings } from "@/store/thunks/settingsThunks";
 import Upcoming from "@/components/subscription/Upcoming";
@@ -39,6 +40,7 @@ function App() {
   }, [selectedDate]);
   useEffect(() => {
     dispatch(hydrateSettings());
+    dispatch(hydrateTotalSpend());
     dispatch(hydrateHighestSpendingItem());
     dispatch(hydrateUpcomingItem());
     dispatch(setIsLoading(false));

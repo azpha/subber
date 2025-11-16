@@ -20,7 +20,9 @@ export default function Info() {
           <p className="inline">·</p>
           <p className="inline">${item.price}</p>
           <p className="inline">·</p>
-          <p className="inline">{new Date().toLocaleDateString()}</p>
+          <p className="inline">
+            {new Date(item.nextBillingDate).toLocaleDateString()}
+          </p>
         </div>
       </div>
     );

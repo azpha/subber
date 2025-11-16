@@ -3,6 +3,7 @@ import {
   updateHighestSpending,
   updateItems,
   updateUpcomingItem,
+  updateTotalSpend,
 } from "../reducers/itemSlice";
 import { request } from "@/lib/api";
 
@@ -17,6 +18,8 @@ export const hydrateItems =
       const items = await request(path, "GET", null, null);
       if (items.status) {
         dispatch(updateItems(items.body));
+        dispatch(hydrateUpcomingItem());
+        dispatch(hydrateTotalSpend());
       }
     } catch (error) {
       console.error("Failed to hydrate!", error);
@@ -55,6 +58,17 @@ export const hydrateHighestSpendingItem =
       console.error("Failed to hydrate upcoming item!", error);
     }
   };
+
+export const hydrateTotalSpend = () => async (dispatch: AppDispatch) => {
+  try {
+    const items = await request("metrics/cpm", "GET", null, null);
+    if (items.status) {
+      dispatch(updateTotalSpend(items.body.totalSpend));
+    }
+  } catch (error) {
+    console.error("Failed to hydrate upcoming item!", error);
+  }
+};
 
 export const createItem =
   (item: object, date?: Date | undefined) => async (dispatch: AppDispatch) => {
