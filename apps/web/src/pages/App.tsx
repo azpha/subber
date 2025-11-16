@@ -55,7 +55,7 @@ function App() {
     );
   };
 
-  const InfoUi = () => {
+  const InfoUi = ({ isMobile = false }: { isMobile?: boolean }) => {
     return (
       <>
         <div className="overflow-y-auto overflow-x-hidden h-68">
@@ -73,6 +73,18 @@ function App() {
               />
             </DialogContent>
           </Dialog>
+
+          {isMobile && (
+            <div className="mt-2">
+              <Button
+                onClick={() => setSelectedDate(undefined)}
+                type="button"
+                className="w-full"
+              >
+                Reset
+              </Button>
+            </div>
+          )}
         </div>
       </>
     );
@@ -157,7 +169,7 @@ function App() {
                             : "opacity-0 pointer-events-none"
                         }`}
                       >
-                        {selectedDate && <InfoUi />}
+                        {selectedDate && <InfoUi isMobile={true} />}
                       </div>
                     </div>
                   </div>
