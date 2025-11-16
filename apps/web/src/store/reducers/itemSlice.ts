@@ -8,7 +8,7 @@ import type {
 
 interface ItemState {
   items: Subscription[];
-  upcomingItem: Subscription | null;
+  upcomingItem: Subscription[] | null;
   highestSpendingItem: Subscription | null;
   totalSpend: number | null;
   filters: Filters;
@@ -53,7 +53,7 @@ export const itemSlice = createSlice({
         state.items = items;
       }
     },
-    updateUpcomingItem: (state, action: PayloadAction<Subscription>) => {
+    updateUpcomingItem: (state, action: PayloadAction<Subscription[]>) => {
       state.upcomingItem = action.payload;
     },
     updateHighestSpending: (state, action: PayloadAction<Subscription>) => {

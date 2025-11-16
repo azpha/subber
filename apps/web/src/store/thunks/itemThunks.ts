@@ -35,7 +35,7 @@ export const hydrateUpcomingItem = () => async (dispatch: AppDispatch) => {
       null
     );
     if (items.status) {
-      dispatch(updateUpcomingItem(items.body[0]));
+      dispatch(updateUpcomingItem(items.body));
     }
   } catch (error) {
     console.error("Failed to hydrate upcoming item!", error);
