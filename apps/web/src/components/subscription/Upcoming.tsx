@@ -53,7 +53,11 @@ export default function Upcoming() {
       <Card className="dark">
         <CardContent>
           <div className="grid grid-cols-2">
-            <UpcomingCard item={upcomingItems[shownCard]} />
+            {upcomingItems && upcomingItems.length > 0 ? (
+              <UpcomingCard item={upcomingItems[shownCard]} />
+            ) : (
+              <LoadingCard />
+            )}
             <div className="flex justify-end">
               <div className="flex flex-col justify-center">
                 <ArrowUp
