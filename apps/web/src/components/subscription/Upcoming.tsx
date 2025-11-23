@@ -38,7 +38,7 @@ export default function Upcoming() {
 
   if (isLoading) {
     return <LoadingCard />;
-  } else if (!upcomingItems) {
+  } else if (!upcomingItems || upcomingItems.length <= 0) {
     return <EmptyState title={"Upcoming"} />;
   } else if (upcomingItems.length == 1) {
     return (
@@ -53,11 +53,7 @@ export default function Upcoming() {
       <Card className="dark">
         <CardContent>
           <div className="grid grid-cols-2">
-            {upcomingItems && upcomingItems.length > 0 ? (
-              <UpcomingCard item={upcomingItems[shownCard]} />
-            ) : (
-              <LoadingCard />
-            )}
+            <UpcomingCard item={upcomingItems[shownCard]} />
             <div className="flex justify-end">
               <div className="flex flex-col justify-center">
                 <ArrowUp
